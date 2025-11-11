@@ -44,7 +44,7 @@ st.sidebar.caption(
 # APP HEADER + TABS
 # =========================
 st.title("🧫 BactAI-D: Intelligent Bacteria Identification Assistant")
-st.markdown("Use the tabs below to switch between **manual entry**, **AI parsing**, and **gold test evaluation**.")
+st.markdown("Use the tabs below to switch between **manual entry**, **AI parsing**, and **gold test evaluation & training**.")
 
 tab_manual, tab_llm, tab_gold = st.tabs(["🔬 Manual Entry", "🧠 LLM Parser", "📚 Gold Tests"])
 
@@ -239,7 +239,7 @@ with tab_manual:
 # TAB 2: LLM PARSER (RULE/LLM STUBS)
 # =========================
 with tab_llm:
-    st.info("Paste a microbiology description. The **Rule Parser** will extract fields (baseline). The **LLM Parser** is a stub for now.")
+    st.info("Paste a microbiology description. The **Rule Parser** extracts fields (baseline). The **LLM Parser** is a stub for now.")
     user_text = st.text_area("Paste microbiology description here:")
 
     col_a, col_b = st.columns(2)
@@ -258,7 +258,7 @@ with tab_llm:
             st.json(result)
 
 # =========================
-# TAB 3: GOLD TESTS (EVALUATION)
+# TAB 3: GOLD TESTS (EVALUATION & TRAINING)
 # =========================
 with tab_gold:
     st.subheader("Gold Standard Evaluation")
@@ -289,6 +289,34 @@ with tab_gold:
 
         # Show where proposals were saved
         st.caption(f"Proposals (unknown fields/values) appended to: `{result['summary']['proposals_path']}`")
+
+    st.markdown("---")
+    st.subheader("Auto-learning from Gold Tests")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("🧬 Train from Gold Tests"):
+            with st.spinner("Training from gold tests (updating extended schema, alias maps, and signals)..."):
+                from training.gold_trainer import train_from_gold
+                out = train_from_gold()
+            st.success("Training complete.")
+            st.json(out)
+
+    with col2:
+        if st.button("⬆️ Commit learned files to GitHub"):
+            with st.spinner("Pushing updates to GitHub..."):
+                from training.repo_sync import push_updates_to_github
+                paths = [
+                    "data/extended_schema.json",
+                    "data/alias_maps.json",
+                    "data/signals_catalog.json"
+                ]
+                result = push_updates_to_github(
+                    paths,
+                    commit_message="train: update extended schema, aliases, signals from gold tests"
+                )
+            st.success("Pushed.")
+            st.json(result)
 
 # =========================
 # FOOTER
