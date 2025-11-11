@@ -1,7 +1,6 @@
 # engine/parser_rules.py
-# ---------------------------------
-# Baseline regex/parser rules for common microbiology phrases.
-# This is a starter; we’ll expand it iteratively using your gold tests.
+# ------------------------------------------------------------
+# Expanded regex rules for higher coverage of biochemical phrases.
 
 import re
 from typing import Dict
@@ -11,109 +10,124 @@ FERM_SUGARS = [
     "Xylose", "Rhamnose", "Arabinose", "Raffinose", "Trehalose", "Inositol"
 ]
 
+MEDIA_ALIASES = {
+    "mac": "MacConkey Agar",
+    "macconkey": "MacConkey Agar",
+    "msa": "Mannitol Salt Agar",
+    "bap": "Blood Agar",
+    "blood agar": "Blood Agar",
+    "chocolate": "Chocolate Agar",
+    "cled": "CLED Agar"
+}
+
 def _set_result(d: Dict[str, str], field: str, value: str):
-    # Don’t overwrite if we already have a confident value
     if field not in d or d[field] == "Unknown":
         d[field] = value
 
+def _detect_simple(test: str, text: str, parsed: Dict[str, str]):
+    if re.search(rf"\b{test}\s*(\+|positive)\b", text, re.I):
+        _set_result(parsed, test, "Positive")
+    elif re.search(rf"\b{test}\s*(\-|negative)\b", text, re.I):
+        _set_result(parsed, test, "Negative")
+    elif re.search(rf"\b{test}\s*variable\b", text, re.I):
+        _set_result(parsed, test, "Variable")
+
 def parse_text_rules(text: str) -> dict:
-    """
-    Rule-based parsing for frequent/clean patterns.
-    Returns {"parsed_fields": {...}, "source": "rule_parser"}.
-    """
     t = text.strip()
     parsed: Dict[str, str] = {}
 
     # --- Gram Stain ---
     if re.search(r"\bgram[-\s]?positive\b", t, re.I):
         _set_result(parsed, "Gram Stain", "Positive")
-    if re.search(r"\bgram[-\s]?negative\b", t, re.I):
+    elif re.search(r"\bgram[-\s]?negative\b", t, re.I):
         _set_result(parsed, "Gram Stain", "Negative")
 
-    # --- Shape (basic) ---
+    # --- Shape ---
     if re.search(r"\bcocci\b", t, re.I):
         _set_result(parsed, "Shape", "Cocci")
+    if re.search(r"\bcoccobacilli|short\s+rods?\b", t, re.I):
+        _set_result(parsed, "Shape", "Short Rods")
     if re.search(r"\brods?\b", t, re.I):
         _set_result(parsed, "Shape", "Rods")
     if re.search(r"\bbacilli\b", t, re.I):
         _set_result(parsed, "Shape", "Bacilli")
-    if re.search(r"\bspiral|spirochete\b", t, re.I):
+    if re.search(r"\bspirochete|spiral\b", t, re.I):
         _set_result(parsed, "Shape", "Spiral")
-    if re.search(r"\bcoccobacilli|short\s+rods?\b", t, re.I):
-        _set_result(parsed, "Shape", "Short Rods")
 
-    # --- Catalase / Oxidase / Coagulase / DNase / Urease etc. ---
+    # --- Common biochemical tests ---
     simple_tests = [
-        "Catalase", "Oxidase", "Coagulase", "DNase", "Urease",
-        "Citrate", "Methyl Red", "VP", "H2S", "ONPG",
-        "Motility", "Capsule", "Spore Formation", "Nitrate Reduction", "Lipase Test"
+        "Catalase", "Oxidase", "Coagulase", "DNase", "Urease", "Indole",
+        "Citrate", "Methyl Red", "VP", "H2S", "ONPG", "Motility",
+        "Capsule", "Spore Formation", "Nitrate Reduction", "Lipase Test"
     ]
     for test in simple_tests:
-        # positive
-        if re.search(rf"\b{re.escape(test)}\s*(\+|positive)\b", t, re.I):
-            _set_result(parsed, test, "Positive")
-        # negative
-        if re.search(rf"\b{re.escape(test)}\s*(\-|negative)\b", t, re.I):
-            _set_result(parsed, test, "Negative")
-        # variable
-        if re.search(rf"\b{re.escape(test)}\s*variable\b", t, re.I):
-            _set_result(parsed, test, "Variable")
+        _detect_simple(test, t, parsed)
 
-    # --- Haemolysis / Haemolysis Type ---
-    if re.search(r"\b(beta|α|alpha|γ|gamma)\s*[- ]?ha?emoly(si|z)is\b", t, re.I):
+    # --- Haemolysis / Type ---
+    if re.search(r"(β|beta)[-\s]?(haemo|hemo)lys", t, re.I):
         _set_result(parsed, "Haemolysis", "Positive")
-        if re.search(r"\bbeta\s*[- ]?ha?em", t, re.I):
-            _set_result(parsed, "Haemolysis Type", "Beta")
-        elif re.search(r"\balpha|α\s*[- ]?ha?em", t, re.I):
-            _set_result(parsed, "Haemolysis Type", "Alpha")
-        elif re.search(r"\bgamma|γ\s*[- ]?ha?em", t, re.I):
-            _set_result(parsed, "Haemolysis Type", "Gamma")
-    if re.search(r"\bnon[- ]?ha?emoly", t, re.I):
+        _set_result(parsed, "Haemolysis Type", "Beta")
+    elif re.search(r"(α|alpha)[-\s]?(haemo|hemo)lys", t, re.I):
+        _set_result(parsed, "Haemolysis", "Positive")
+        _set_result(parsed, "Haemolysis Type", "Alpha")
+    elif re.search(r"(γ|gamma)[-\s]?(haemo|hemo)lys", t, re.I):
+        _set_result(parsed, "Haemolysis", "Positive")
+        _set_result(parsed, "Haemolysis Type", "Gamma")
+    elif re.search(r"non[-\s]?(haemo|hemo)lytic", t, re.I):
         _set_result(parsed, "Haemolysis", "Negative")
         _set_result(parsed, "Haemolysis Type", "None")
 
-    # --- NaCl tolerance (>=6%) ---
-    if re.search(r"\b(nacl|salt)\s*(tolerant|tolerance)\b.*\b(6|6\.0|7|7\.0)\s*%|up to\s*7\s*%", t, re.I):
-        _set_result(parsed, "NaCl Tolerant (>=6%)", "Positive")
+    # --- Motility synonyms ---
+    if re.search(r"\bmotile|swarming\b", t, re.I):
+        _set_result(parsed, "Motility", "Positive")
+    if re.search(r"\bnon[- ]?motile|immotile\b", t, re.I):
+        _set_result(parsed, "Motility", "Negative")
 
-    # --- Fermentation summary phrases ---
-    # e.g., "ferments glucose, mannitol and sucrose but not lactose"
-    ferm_pos = re.findall(r"\bferments?\s+([a-z,\s]+?)(?:\bbut\b|\.|,|;|$)", t, re.I)
-    ferm_neg = re.findall(r"\bnot\s+([a-z,\s]+?)(?:\bfermented|\bferments|\butili[sz]ed|\.)", t, re.I)
+    # --- Nitrate Reduction special cases ---
+    if re.search(r"\bnitrate\s+(?:is\s+)?reduced\b", t, re.I):
+        _set_result(parsed, "Nitrate Reduction", "Positive")
+    if re.search(r"\bno\s+nitrate\s+reduction\b", t, re.I):
+        _set_result(parsed, "Nitrate Reduction", "Negative")
 
-    def _mark_list(txt: str, value: str):
+    # --- Fermentation parsing ---
+    ferm_pos = re.findall(r"ferments?\s+([a-z,\s]+?)(?:but|except|not|\.)", t, re.I)
+    ferm_neg = re.findall(r"(?:but|except)\s+not\s+([a-z,\s]+?)(?:\.)", t, re.I)
+    def mark_sugars(txt, value):
         for sugar in FERM_SUGARS:
             if re.search(rf"\b{sugar}\b", txt, re.I):
                 _set_result(parsed, f"{sugar} Fermentation", value)
-
     for chunk in ferm_pos:
-        _mark_list(chunk, "Positive")
+        mark_sugars(chunk, "Positive")
     for chunk in ferm_neg:
-        _mark_list(chunk, "Negative")
+        mark_sugars(chunk, "Negative")
 
-    # --- Temperatures: "Grows at 37 °C" or ranges in prose (baseline) ---
-    # We only catch single temps here for now (gold tests often state 37 °C)
-    m = re.search(r"\b(?:grows\s+at|growth\s+at)\s*(\d{1,2})\s*[°º]?\s*c", t, re.I)
+    # --- NaCl tolerance ---
+    if re.search(r"(6(\.5)?|7)\s*%.*(nacl|salt).*tolerant", t, re.I):
+        _set_result(parsed, "NaCl Tolerant (>=6%)", "Positive")
+
+    # --- Growth Temperature ---
+    m = re.findall(r"(?:grows\s+at|growth\s+at)\s*(\d{1,2})\s*[°º]?\s*c", t, re.I)
     if m:
-        # store a single temp; later validator can integrate with range
-        _set_result(parsed, "Growth Temperature", f"{m.group(1)}//{m.group(1)}")
+        low = min(map(int, m))
+        high = max(map(int, m))
+        _set_result(parsed, "Growth Temperature", f"{low}//{high}")
 
-    # --- Oxygen Requirement (simple phrases) ---
-    if re.search(r"\baerobic\b", t, re.I):
-        _set_result(parsed, "Oxygen Requirement", "Aerobic")
-    if re.search(r"\banaerobic\b", t, re.I):
-        _set_result(parsed, "Oxygen Requirement", "Anaerobic")
+    # --- Oxygen Requirement ---
     if re.search(r"\bfacultative\b", t, re.I):
         _set_result(parsed, "Oxygen Requirement", "Facultative Anaerobe")
-    if re.search(r"\bmicroaerophil(ic|e)\b", t, re.I):
+    elif re.search(r"\baerobic\b", t, re.I):
+        _set_result(parsed, "Oxygen Requirement", "Aerobic")
+    elif re.search(r"\banaerobic\b", t, re.I):
+        _set_result(parsed, "Oxygen Requirement", "Anaerobic")
+    elif re.search(r"\bmicroaerophil", t, re.I):
         _set_result(parsed, "Oxygen Requirement", "Microaerophilic")
 
-    # --- Media (very light touch here; LLM or alias table will do more later) ---
-    if re.search(r"\bmacconkey\b", t, re.I):
-        parsed["Media Grown On"] = "MacConkey Agar"
-    if re.search(r"\bblood\s+agar\b", t, re.I):
-        parsed["Media Grown On"] = (parsed.get("Media Grown On", "") + "; Blood Agar").strip("; ")
-    if re.search(r"\bmannitol\s+salt\s+agar\b|\bMSA\b", t, re.I):
-        parsed["Media Grown On"] = (parsed.get("Media Grown On", "") + "; Mannitol Salt Agar").strip("; ")
+    # --- Media detection ---
+    found_media = []
+    for alias, canon in MEDIA_ALIASES.items():
+        if re.search(rf"\b{re.escape(alias)}\b", t, re.I):
+            found_media.append(canon)
+    if found_media:
+        _set_result(parsed, "Media Grown On", "; ".join(sorted(set(found_media))))
 
     return {"parsed_fields": parsed, "source": "rule_parser"}
