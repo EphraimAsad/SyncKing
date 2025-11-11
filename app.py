@@ -4,7 +4,7 @@ import re
 import os
 from fpdf import FPDF
 from datetime import datetime
-from engine import BacteriaIdentifier
+from engine.bacteria_identifier import BacteriaIdentifier
 
 # --- CONFIG ---
 st.set_page_config(page_title="BactAI-D Assistant", layout="wide")
@@ -213,4 +213,5 @@ if not st.session_state.results.empty:
 # --- FOOTER ---
 st.markdown("<hr>", unsafe_allow_html=True)
 st.markdown("<div style='text-align:center; font-size:14px;'>Created by <b>Zain</b> | www.linkedin.com/in/zain-asad-1998EPH</div>", unsafe_allow_html=True)
+
 
