@@ -1,6 +1,11 @@
-# Placeholder for LLM (Ollama DeepSeek) integration
-def parse_text_llm(text: str, model="deepseek") -> dict:
-    """Call Ollama API and return JSON of parsed fields."""
-    # TODO: integrate real API call
-    return {"raw_text": text, "parsed_fields": {}}
+# engine/parser_llm.py
+# ---------------------------------
+# Placeholder for Ollama DeepSeek integration
 
+def parse_text_llm(text: str, model: str = "deepseek") -> dict:
+    """
+    Future: call Ollama API (DeepSeek model)
+    and return parsed field dictionary.
+    """
+    # TODO: integrate real call
+    return {"parsed_fields": {}, "model": model, "note": "LLM not yet connected"}
