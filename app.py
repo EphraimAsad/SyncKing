@@ -78,6 +78,15 @@ st.sidebar.markdown(
     unsafe_allow_html=True
 )
 
+tab1, tab2 = st.tabs(["🧫 Manual Entry", "🧠 LLM Parser (Coming Soon)"])
+with tab2:
+    st.info("LLM-based microbiology parser coming soon! Paste text and I'll extract fields.")
+    text_input = st.text_area("Paste microbiology description here")
+    if st.button("Parse (Rules Only)"):
+        from engine.parser_rules import parse_text_rules
+        result = parse_text_rules(text_input)
+        st.json(result)
+
 def get_unique_values(field):
     vals = []
     for v in eng.db[field]:
@@ -213,5 +222,6 @@ if not st.session_state.results.empty:
 # --- FOOTER ---
 st.markdown("<hr>", unsafe_allow_html=True)
 st.markdown("<div style='text-align:center; font-size:14px;'>Created by <b>Zain</b> | www.linkedin.com/in/zain-asad-1998EPH</div>", unsafe_allow_html=True)
+
 
 
