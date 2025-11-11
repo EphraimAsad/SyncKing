@@ -1,2 +1,181 @@
-{}
-
+{
+  "CAMP": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": [
+      "CAMP Test"
+    ]
+  },
+  "Hippurate Hydrolysis": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "PYR": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Optochin": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": [
+      "Optochin Sensitivity"
+    ]
+  },
+  "Bile Solubility": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Novobiocin": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Bile Resistance": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Lipase": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Lecithinase": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Odour": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Growth Factors": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Fructose Fermentation": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Glucose Oxidation": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Glycerol Fermentation": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Fermentation Products": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Cellobiose Fermentation": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "pH Range": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Iron Oxidation": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Arginine": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "NaCl Tolerant (>=15%)": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Temperature Dependence": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Sulfur Utilization": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Acid Fast": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "NaCl Tolerant (>=10%)": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Fermentation Product": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Arginine Hydrolysis": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Casein Hydrolysis": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Tyrosine Hydrolysis": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Mannose Fermentation": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Gas Production": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Inulin Fermentation": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Other Products": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Antibiotic Resistance": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Metabolic Product": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  },
+  "Indole": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
+  }
+}

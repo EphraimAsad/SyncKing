@@ -1,2 +1,956 @@
-{}
-
+{
+  "Staphylococcus": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 6,
+      "Variable": 0,
+      "_n": 6
+    },
+    "Novobiocin": {
+      "Positive": 0,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 0
+    },
+    "Antibiotic Resistance": {
+      "Positive": 0,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 0
+    }
+  },
+  "Salmonella": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 6,
+      "Variable": 0,
+      "_n": 6
+    }
+  },
+  "Enterobacter": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 10,
+      "Variable": 0,
+      "_n": 10
+    }
+  },
+  "Pseudomonas": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 6,
+      "Variable": 0,
+      "_n": 6
+    }
+  },
+  "Bacillus": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 14,
+      "Variable": 0,
+      "_n": 14
+    },
+    "Lecithinase": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Shigella": {
+    "Indole": {
+      "Positive": 2,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 4
+    }
+  },
+  "Escherichia": {
+    "Indole": {
+      "Positive": 4,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 4
+    }
+  },
+  "Klebsiella": {
+    "Indole": {
+      "Positive": 2,
+      "Negative": 4,
+      "Variable": 0,
+      "_n": 6
+    }
+  },
+  "Proteus": {
+    "Indole": {
+      "Positive": 2,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 4
+    }
+  },
+  "Clostridium": {
+    "Indole": {
+      "Positive": 6,
+      "Negative": 12,
+      "Variable": 0,
+      "_n": 18
+    },
+    "Lipase": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    },
+    "Lecithinase": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    },
+    "Odour": {
+      "Positive": 0,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 0
+    },
+    "Fructose Fermentation": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Bacteroides": {
+    "Indole": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 2,
+      "_n": 4
+    },
+    "Bile Resistance": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Streptococcus": {
+    "CAMP": {
+      "Positive": 6,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 6
+    },
+    "Hippurate Hydrolysis": {
+      "Positive": 4,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 4
+    },
+    "PYR": {
+      "Positive": 0,
+      "Negative": 4,
+      "Variable": 0,
+      "_n": 4
+    },
+    "Optochin": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    },
+    "Bile Solubility": {
+      "Positive": 4,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 4
+    },
+    "Inulin Fermentation": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    },
+    "Metabolic Product": {
+      "Positive": 0,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 0
+    }
+  },
+  "Aeromonas": {
+    "Indole": {
+      "Positive": 16,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 16
+    },
+    "Gas Production": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Yersinia": {
+    "Indole": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 6,
+      "_n": 8
+    }
+  },
+  "Morganella": {
+    "Indole": {
+      "Positive": 10,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 10
+    }
+  },
+  "Providencia": {
+    "Indole": {
+      "Positive": 10,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 12
+    }
+  },
+  "Pasteurella": {
+    "Indole": {
+      "Positive": 10,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 10
+    }
+  },
+  "Citrobacter": {
+    "Indole": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 4,
+      "_n": 6
+    }
+  },
+  "Campylobacter": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 6,
+      "Variable": 0,
+      "_n": 6
+    }
+  },
+  "Vibrio": {
+    "Indole": {
+      "Positive": 14,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 14
+    }
+  },
+  "Burkholderia": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 10,
+      "Variable": 0,
+      "_n": 10
+    },
+    "Odour": {
+      "Positive": 0,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 0
+    },
+    "Glucose Oxidation": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Legionella": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Helicobacter": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Leptospira": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Serratia": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 10,
+      "Variable": 0,
+      "_n": 10
+    },
+    "Temperature Dependence": {
+      "Positive": 0,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 0
+    }
+  },
+  "Alcaligenes": {
+    "Odour": {
+      "Positive": 0,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 0
+    },
+    "Indole": {
+      "Positive": 0,
+      "Negative": 4,
+      "Variable": 0,
+      "_n": 4
+    }
+  },
+  "Shewanella": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 8,
+      "Variable": 0,
+      "_n": 8
+    }
+  },
+  "Acinetobacter": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 12,
+      "Variable": 0,
+      "_n": 12
+    }
+  },
+  "Haemophilus": {
+    "Growth Factors": {
+      "Positive": 0,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 0
+    },
+    "Indole": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 4,
+      "_n": 6
+    }
+  },
+  "Micrococcus": {
+    "Glucose Oxidation": {
+      "Positive": 4,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 4
+    },
+    "Indole": {
+      "Positive": 0,
+      "Negative": 6,
+      "Variable": 0,
+      "_n": 6
+    }
+  },
+  "Edwardsiella": {
+    "Indole": {
+      "Positive": 6,
+      "Negative": 2,
+      "Variable": 2,
+      "_n": 10
+    }
+  },
+  "Chromobacterium": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 4,
+      "Variable": 4,
+      "_n": 8
+    }
+  },
+  "Lactobacillus": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 6,
+      "Variable": 0,
+      "_n": 6
+    },
+    "pH Range": {
+      "Positive": 0,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 0
+    },
+    "Fermentation Product": {
+      "Positive": 0,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 0
+    }
+  },
+  "Corynebacterium": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 6,
+      "Variable": 0,
+      "_n": 6
+    }
+  },
+  "Nocardia": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 6,
+      "Variable": 0,
+      "_n": 6
+    },
+    "Acid Fast": {
+      "Positive": 0,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 0
+    },
+    "Casein Hydrolysis": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    },
+    "Tyrosine Hydrolysis": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Propionibacterium": {
+    "Indole": {
+      "Positive": 6,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 6
+    },
+    "Glycerol Fermentation": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    },
+    "Mannose Fermentation": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    },
+    "Other Products": {
+      "Positive": 0,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 0
+    }
+  },
+  "Peptostreptococcus": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 4,
+      "Variable": 0,
+      "_n": 4
+    }
+  },
+  "Veillonella": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Fusobacterium": {
+    "Odour": {
+      "Positive": 0,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 0
+    },
+    "Indole": {
+      "Positive": 4,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 4
+    }
+  },
+  "Eubacterium": {
+    "Fermentation Products": {
+      "Positive": 0,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 0
+    },
+    "Cellobiose Fermentation": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    },
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Halomonas": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 6,
+      "Variable": 0,
+      "_n": 6
+    },
+    "NaCl Tolerant (>=10%)": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Psychrobacter": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 4,
+      "Variable": 0,
+      "_n": 4
+    }
+  },
+  "Deinococcus": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Thermus": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 4,
+      "Variable": 0,
+      "_n": 4
+    }
+  },
+  "Acidithiobacillus": {
+    "pH Range": {
+      "Positive": 0,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 0
+    },
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    },
+    "Iron Oxidation": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Mycoplasma": {
+    "Arginine": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    },
+    "Arginine Hydrolysis": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Bordetella": {
+    "Growth Factors": {
+      "Positive": 0,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 0
+    },
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Stenotrophomonas": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 8,
+      "Variable": 0,
+      "_n": 8
+    }
+  },
+  "Ralstonia": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 4,
+      "Variable": 0,
+      "_n": 4
+    }
+  },
+  "Achromobacter": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Brucella": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 4,
+      "Variable": 0,
+      "_n": 4
+    }
+  },
+  "Brevundimonas": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 4,
+      "Variable": 0,
+      "_n": 4
+    }
+  },
+  "Arthrobacter": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    },
+    "Glucose Oxidation": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Cytophaga": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Flavobacterium": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 4,
+      "Variable": 0,
+      "_n": 4
+    }
+  },
+  "Oerskovia": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Sphingomonas": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 4,
+      "Variable": 0,
+      "_n": 4
+    },
+    "Glucose Oxidation": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Comamonas": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 4,
+      "Variable": 0,
+      "_n": 4
+    }
+  },
+  "Halobacterium": {
+    "NaCl Tolerant (>=15%)": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    },
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Thermococcus": {
+    "Sulfur Utilization": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Actinomyces": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 4,
+      "Variable": 0,
+      "_n": 4
+    }
+  },
+  "Elizabethkingia": {
+    "Indole": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Hafnia": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Photobacterium": {
+    "Indole": {
+      "Positive": 4,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 4
+    }
+  },
+  "Pantoea": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Raoultella": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 0,
+      "Variable": 2,
+      "_n": 2
+    }
+  },
+  "Ochrobactrum": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Roseomonas": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Actinobacillus": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Gemella": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 4,
+      "Variable": 0,
+      "_n": 4
+    }
+  },
+  "Rothia": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 4,
+      "Variable": 0,
+      "_n": 4
+    }
+  },
+  "Listeria": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Carnobacterium": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Plesiomonas": {
+    "Indole": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Janthinobacterium": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Paenibacillus": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Moraxella": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Aerococcus": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Kocuria": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Leuconostoc": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    },
+    "Gas Production": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    },
+    "Fructose Fermentation": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Rhodococcus": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Francisella": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 4,
+      "Variable": 0,
+      "_n": 4
+    }
+  },
+  "Erysipelothrix": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    },
+    "Fructose Fermentation": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Arcanobacterium": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Porphyromonas": {
+    "Indole": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Prevotella": {
+    "Indole": {
+      "Positive": 2,
+      "Negative": 0,
+      "Variable": 0,
+      "_n": 2
+    }
+  },
+  "Microbacterium": {
+    "Indole": {
+      "Positive": 0,
+      "Negative": 2,
+      "Variable": 0,
+      "_n": 2
+    }
+  }
+}
