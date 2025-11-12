@@ -79,7 +79,7 @@ def parse_text_llm(text: str) -> dict:
         }
 
     payload = {
-        "model": "deepseek-v3.1:671b-cloud",
+        "model": ""model": "deepseek-chat",
         "messages": [
             {
                 "role": "system",
