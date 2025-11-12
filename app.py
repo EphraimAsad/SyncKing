@@ -197,7 +197,7 @@ with tab_manual:
         except Exception:
             ext_schema = {}
 
-    # CORE FIELDS (same list as in parser_ext)
+    # CORE fields to exclude from extended list
     CORE_FIELDS = {
         "Genus","Species","Gram Stain","Shape","Colony Morphology","Haemolysis","Haemolysis Type",
         "Motility","Capsule","Spore Formation","Growth Temperature","Oxygen Requirement",
@@ -217,10 +217,9 @@ with tab_manual:
         if (
             isinstance(meta, dict)
             and meta.get("value_type") == "enum_PNV"
-            and f_name not in CORE_FIELDS     # <-- prevent core duplicates
+            and f_name not in CORE_FIELDS
         )
     ]
-
 
     if extended_enum_fields:
         with st.sidebar.expander("🧪 Extended Tests (Experimental)", expanded=False):
@@ -274,9 +273,9 @@ with tab_manual:
     # --- DISPLAY RESULTS ---
     if not st.session_state.results.empty:
         st.info(
-            "Core percentages are based upon options entered. "
+            "Core percentages are based on the tests you entered. "
             "Blended confidence also uses extended tests when provided. "
-            "True confidence percentage is based on all database fields."
+            "True confidence is based on all database fields."
         )
         for _, row in st.session_state.results.iterrows():
             blended_value = int(row["Blended Confidence"].replace("%", ""))
@@ -377,17 +376,18 @@ with tab_manual:
                 )
 
 # =========================
-# TAB 2: LLM PARSER (unchanged from previous stage except for extended buttons)
+# TAB 2: LLM PARSER
 # =========================
 with tab_llm:
     st.info(
         "Paste a microbiology description. We'll parse with rules + extended tests, "
-        "then infer likely genera from extended evidence."
+        "infer genera from extended evidence, and you can also try the DeepSeek LLM parser."
     )
     user_text = st.text_area("Paste microbiology description here:")
 
     col_a, col_b, col_c, col_d = st.columns(4)
 
+    # Rule parser
     with col_a:
         if st.button("Parse (Rule Parser)"):
             from engine.parser_rules import parse_text_rules
@@ -395,6 +395,7 @@ with tab_llm:
             st.subheader("Rule Parser Output")
             st.json(result)
 
+    # Extended parser
     with col_b:
         if st.button("Parse (Extended Tests)"):
             from engine.parser_ext import parse_text_extended
@@ -402,6 +403,7 @@ with tab_llm:
             st.subheader("Extended Parser Output")
             st.json(result)
 
+    # Extended inference
     with col_c:
         if st.button("Infer Genera (Extended Signals)"):
             from engine.parser_ext import parse_text_extended
@@ -418,6 +420,8 @@ with tab_llm:
                 st.caption(
                     "No signal available (try training first or providing a description with extended tests)."
                 )
+
+    # LLM parser (DeepSeek)
     with col_d:
         if st.button("Parse with LLM (DeepSeek)"):
             from engine.parser_llm import parse_text_llm
@@ -426,7 +430,7 @@ with tab_llm:
             st.json(result)
 
 # =========================
-# TAB 3: GOLD TESTS (identical to your Stage 5 version)
+# TAB 3: GOLD TESTS
 # =========================
 with tab_gold:
     st.subheader("Gold Standard Evaluation")
@@ -435,7 +439,7 @@ with tab_gold:
         "`data/extended_proposals.jsonl` for later review/promotion."
     )
 
-    mode = st.selectbox("Parser Mode", ["rules"], index=0)
+    mode = st.selectbox("Parser Mode", ["rules"], index=0)  # later: add "llm", "combo"
 
     if st.button("Run Gold Tests"):
         with st.spinner("Evaluating gold tests..."):
@@ -503,7 +507,3 @@ st.markdown(
     "<div style='text-align:center; font-size:14px;'>Created by <b>Zain</b> | www.linkedin.com/in/zain-asad-1998EPH</div>",
     unsafe_allow_html=True,
 )
-
-
-
-
