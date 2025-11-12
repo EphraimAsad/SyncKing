@@ -1,10 +1,12 @@
 # engine/parser_llm.py
 # ------------------------------------------------------------
 # LLM-based parser using Cloudflare Workers AI (@cf/meta/llama-3.1-8b-instruct)
-# Extracts microbiology test results into structured JSON.
+# Extracts microbiology test results into structured JSON, with robust
+# handling of "almost JSON" outputs.
 
 import os
 import json
+import re
 import requests
 
 # Load secrets
@@ -48,7 +50,8 @@ RULES:
   OR literal strings for temperatures (e.g. "37//40").
 - If a test is NOT mentioned, set it to "Unknown".
 - DO NOT hallucinate new fields.
-- ALWAYS return valid JSON only.
+- DO NOT wrap the JSON in code fences or add explanations.
+- ALWAYS return a single valid JSON object, and nothing else.
 
 Now extract from this text:
 
@@ -58,6 +61,29 @@ Now extract from this text:
 
 Return ONLY JSON.
 """
+
+# ------------------------------------------------------------
+# Helper: try to salvage almost-JSON into strict JSON
+# ------------------------------------------------------------
+def _salvage_json(raw: str):
+    """
+    Try to rescue 'almost JSON': trim to outer braces and
+    remove trailing commas. Returns dict or raises.
+    """
+    s = raw.strip()
+    # Keep only between first '{' and last '}'
+    start = s.find("{")
+    end = s.rfind("}")
+    if start == -1 or end == -1 or end <= start:
+        raise ValueError("No JSON object braces found")
+
+    s = s[start : end + 1]
+
+    # Remove trailing commas before } or ]
+    s = re.sub(r",\s*([}\]])", r"\1", s)
+
+    return json.loads(s)
+
 
 # ------------------------------------------------------------
 # Cloudflare LLM Parser
@@ -80,7 +106,8 @@ def parse_text_llm(text: str) -> dict:
             FIELD_LIST=", ".join(ALL_FIELDS),
             TEXT=text
         ),
-        "temperature": 0.0  # deterministic extraction
+        "temperature": 0.0,   # deterministic extraction
+        "max_tokens": 800     # enough to include all fields without truncation
     }
 
     try:
@@ -93,8 +120,7 @@ def parse_text_llm(text: str) -> dict:
             "raw": ""
         }
 
-    # Cloudflare returns:
-    # { "result": { "response": "... JSON ..." } }
+    # Cloudflare returns: { "result": { "response": "... JSON or text ..." } }
     if "result" not in data or "response" not in data["result"]:
         return {
             "parsed_fields": {},
@@ -104,15 +130,19 @@ def parse_text_llm(text: str) -> dict:
 
     raw_output = data["result"]["response"]
 
-    # Validate JSON
+    # 1st attempt: strict JSON
     try:
         parsed = json.loads(raw_output)
     except Exception:
-        return {
-            "parsed_fields": {},
-            "error": "LLM returned invalid JSON",
-            "raw": raw_output
-        }
+        # 2nd attempt: salvage almost-JSON
+        try:
+            parsed = _salvage_json(raw_output)
+        except Exception:
+            return {
+                "parsed_fields": {},
+                "error": "LLM returned invalid or truncated JSON",
+                "raw": raw_output
+            }
 
     # Normalize values
     cleaned = {}
