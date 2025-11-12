@@ -238,11 +238,16 @@ with tab_manual:
 # =========================
 # TAB 2: LLM PARSER (RULE/LLM STUBS)
 # =========================
+# =========================
+# TAB 2: LLM PARSER (RULE/LLM + EXTENDED)
+# =========================
 with tab_llm:
-    st.info("Paste a microbiology description. The **Rule Parser** extracts fields (baseline). The **LLM Parser** is a stub for now.")
+    st.info("Paste a microbiology description. We'll parse with rules + extended tests, then infer likely genera from extended evidence.")
     user_text = st.text_area("Paste microbiology description here:")
 
-    col_a, col_b = st.columns(2)
+    col_a, col_b, col_c = st.columns(3)
+
+    # Rule parser
     with col_a:
         if st.button("Parse (Rule Parser)"):
             from engine.parser_rules import parse_text_rules
@@ -250,12 +255,29 @@ with tab_llm:
             st.subheader("Rule Parser Output")
             st.json(result)
 
+    # Extended parser (data-driven)
     with col_b:
-        if st.button("Parse (LLM Parser)"):
-            from engine.parser_llm import parse_text_llm
-            result = parse_text_llm(user_text or "")
-            st.subheader("LLM Parser Output")
+        if st.button("Parse (Extended Tests)"):
+            from engine.parser_ext import parse_text_extended
+            result = parse_text_extended(user_text or "")
+            st.subheader("Extended Parser Output")
             st.json(result)
+
+    # Inference from extended signals
+    with col_c:
+        if st.button("Infer Genera (Extended Signals)"):
+            from engine.parser_ext import parse_text_extended
+            from engine.extended_reasoner import score_genera_from_extended
+            ext = parse_text_extended(user_text or "")
+            parsed_ext = ext.get("parsed_fields", {})
+            ranked, explain = score_genera_from_extended(parsed_ext)
+            st.subheader("Genus Likelihoods (Extended)")
+            st.write(explain)
+            if ranked:
+                st.table(pd.DataFrame(ranked[:10], columns=["Genus", "Score"]))
+            else:
+                st.caption("No signal available (try training first or providing a description with extended tests).")
+
 
 # =========================
 # TAB 3: GOLD TESTS (EVALUATION & TRAINING)
@@ -326,3 +348,4 @@ st.markdown(
     "<div style='text-align:center; font-size:14px;'>Created by <b>Zain</b> | www.linkedin.com/in/zain-asad-1998EPH</div>",
     unsafe_allow_html=True
 )
+
