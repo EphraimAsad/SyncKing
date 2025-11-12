@@ -93,11 +93,6 @@
     "status": "experimental",
     "aliases": []
   },
-  "Arginine": {
-    "value_type": "enum_PNV",
-    "status": "experimental",
-    "aliases": []
-  },
   "NaCl Tolerant (>=15%)": {
     "value_type": "enum_PNV",
     "status": "experimental",
@@ -118,17 +113,7 @@
     "status": "experimental",
     "aliases": []
   },
-  "NaCl Tolerant (>=10%)": {
-    "value_type": "enum_PNV",
-    "status": "experimental",
-    "aliases": []
-  },
   "Fermentation Product": {
-    "value_type": "enum_PNV",
-    "status": "experimental",
-    "aliases": []
-  },
-  "Arginine Hydrolysis": {
     "value_type": "enum_PNV",
     "status": "experimental",
     "aliases": []
@@ -169,11 +154,6 @@
     "aliases": []
   },
   "Metabolic Product": {
-    "value_type": "enum_PNV",
-    "status": "experimental",
-    "aliases": []
-  },
-  "Indole": {
     "value_type": "enum_PNV",
     "status": "experimental",
     "aliases": []
