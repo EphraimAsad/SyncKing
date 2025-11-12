@@ -5790,124 +5790,124 @@
     }
   },
   {
-  "name": "Staphylococcus aureus",
-  "input": "Gram-positive cocci in clusters, catalase positive, coagulase positive, beta-hemolytic on blood agar. CAMP negative, PYR negative, optochin resistant, bacitracin resistant, novobiocin sensitive. DNase positive, VP positive, MR negative, citrate negative, urease variable.",
-  "expected": {
-    "Gram Stain": "Positive",
-    "Shape": "Cocci",
-    "Catalase": "Positive",
-    "Coagulase": "Positive",
-    "Haemolysis Type": "Beta",
-    "Haemolysis": "Positive",
-    "DNase": "Positive",
-    "Novobiocin": "Positive",
-    "CAMP": "Negative",
-    "PYR": "Negative",
-    "Optochin": "Negative",
-    "Bacitracin": "Negative"
-  }
-},
-{
-  "name": "Staphylococcus epidermidis",
-  "input": "Gram-positive cocci in clusters, catalase positive, coagulase negative. Novobiocin sensitive. CAMP negative, PYR negative, optochin resistant.",
-  "expected": {
-    "Gram Stain": "Positive",
-    "Shape": "Cocci",
-    "Catalase": "Positive",
-    "Coagulase": "Negative",
-    "Novobiocin": "Positive",
-    "CAMP": "Negative",
-    "PYR": "Negative",
-    "Optochin": "Negative"
-  }
-},
-{
-  "name": "Staphylococcus saprophyticus",
-  "input": "Gram-positive cocci in clusters, catalase positive, coagulase negative. Novobiocin resistant. CAMP negative, PYR negative.",
-  "expected": {
-    "Gram Stain": "Positive",
-    "Shape": "Cocci",
-    "Catalase": "Positive",
-    "Coagulase": "Negative",
-    "Novobiocin": "Negative",
-    "CAMP": "Negative",
-    "PYR": "Negative"
-  }
-},
-{
-  "name": "Streptococcus pyogenes",
-  "input": "Gram-positive cocci in chains, catalase negative, beta-hemolytic. Bacitracin sensitive. PYR positive. CAMP negative. Optochin resistant.",
-  "expected": {
-    "Gram Stain": "Positive",
-    "Shape": "Cocci",
-    "Catalase": "Negative",
-    "Haemolysis Type": "Beta",
-    "Haemolysis": "Positive",
-    "Bacitracin": "Positive",
-    "PYR": "Positive",
-    "CAMP": "Negative",
-    "Optochin": "Negative"
-  }
-},
-{
-  "name": "Streptococcus agalactiae",
-  "input": "Gram-positive cocci in chains, catalase negative, beta-hemolytic. CAMP positive. Bacitracin resistant. PYR negative. Optochin resistant.",
-  "expected": {
-    "Gram Stain": "Positive",
-    "Shape": "Cocci",
-    "Catalase": "Negative",
-    "Haemolysis Type": "Beta",
-    "Haemolysis": "Positive",
-    "CAMP": "Positive",
-    "Bacitracin": "Negative",
-    "PYR": "Negative",
-    "Optochin": "Negative"
-  }
-},
-{
-  "name": "Streptococcus pneumoniae",
-  "input": "Gram-positive lancet-shaped diplococci, alpha-hemolytic. Catalase negative. Optochin sensitive. Bile soluble. CAMP negative. PYR negative.",
-  "expected": {
-    "Gram Stain": "Positive",
-    "Shape": "Cocci",
-    "Catalase": "Negative",
-    "Haemolysis Type": "Alpha",
-    "Haemolysis": "Positive",
-    "Optochin": "Positive",
-    "Bile Solubility": "Positive",
-    "CAMP": "Negative",
-    "PYR": "Negative"
-  }
-},
-{
-  "name": "Enterococcus faecalis",
-  "input": "Gram-positive cocci in chains. Catalase negative. Gamma-hemolytic. PYR positive. Optochin resistant. Novobiocin resistant. Bile esculin positive.",
-  "expected": {
-    "Gram Stain": "Positive",
-    "Shape": "Cocci",
-    "Catalase": "Negative",
-    "Haemolysis Type": "None",
-    "Haemolysis": "Negative",
-    "PYR": "Positive",
-    "Optochin": "Negative",
-    "Novobiocin": "Negative",
-    "Esculin Hydrolysis": "Positive"
-  }
-},
-{
-  "name": "Listeria monocytogenes",
-  "input": "Gram-positive short rods. Beta-hemolytic. Catalase positive. CAMP positive with Staph aureus. Motile at room temperature. Bile esculin positive.",
-  "expected": {
-    "Gram Stain": "Positive",
-    "Shape": "Short Rods",
-    "Catalase": "Positive",
-    "Haemolysis Type": "Beta",
-    "Haemolysis": "Positive",
-    "CAMP": "Positive",
-    "Motility": "Positive",
-    "Esculin Hydrolysis": "Positive"
-  }
-[
+    "name": "Staphylococcus aureus",
+    "input": "Gram-positive cocci in clusters, catalase positive, coagulase positive, beta-hemolytic on blood agar. CAMP negative, PYR negative, optochin resistant, bacitracin resistant, novobiocin sensitive. DNase positive, VP positive, MR negative, citrate negative, urease variable.",
+    "expected": {
+      "Gram Stain": "Positive",
+      "Shape": "Cocci",
+      "Catalase": "Positive",
+      "Coagulase": "Positive",
+      "Haemolysis Type": "Beta",
+      "Haemolysis": "Positive",
+      "DNase": "Positive",
+      "Novobiocin": "Positive",
+      "CAMP": "Negative",
+      "PYR": "Negative",
+      "Optochin": "Negative",
+      "Bacitracin": "Negative"
+    }
+  },
+  {
+    "name": "Staphylococcus epidermidis",
+    "input": "Gram-positive cocci in clusters, catalase positive, coagulase negative. Novobiocin sensitive. CAMP negative, PYR negative, optochin resistant.",
+    "expected": {
+      "Gram Stain": "Positive",
+      "Shape": "Cocci",
+      "Catalase": "Positive",
+      "Coagulase": "Negative",
+      "Novobiocin": "Positive",
+      "CAMP": "Negative",
+      "PYR": "Negative",
+      "Optochin": "Negative"
+    }
+  },
+  {
+    "name": "Staphylococcus saprophyticus",
+    "input": "Gram-positive cocci in clusters, catalase positive, coagulase negative. Novobiocin resistant. CAMP negative, PYR negative.",
+    "expected": {
+      "Gram Stain": "Positive",
+      "Shape": "Cocci",
+      "Catalase": "Positive",
+      "Coagulase": "Negative",
+      "Novobiocin": "Negative",
+      "CAMP": "Negative",
+      "PYR": "Negative"
+    }
+  },
+  {
+    "name": "Streptococcus pyogenes",
+    "input": "Gram-positive cocci in chains, catalase negative, beta-hemolytic. Bacitracin sensitive. PYR positive. CAMP negative. Optochin resistant.",
+    "expected": {
+      "Gram Stain": "Positive",
+      "Shape": "Cocci",
+      "Catalase": "Negative",
+      "Haemolysis Type": "Beta",
+      "Haemolysis": "Positive",
+      "Bacitracin": "Positive",
+      "PYR": "Positive",
+      "CAMP": "Negative",
+      "Optochin": "Negative"
+    }
+  },
+  {
+    "name": "Streptococcus agalactiae",
+    "input": "Gram-positive cocci in chains, catalase negative, beta-hemolytic. CAMP positive. Bacitracin resistant. PYR negative. Optochin resistant.",
+    "expected": {
+      "Gram Stain": "Positive",
+      "Shape": "Cocci",
+      "Catalase": "Negative",
+      "Haemolysis Type": "Beta",
+      "Haemolysis": "Positive",
+      "CAMP": "Positive",
+      "Bacitracin": "Negative",
+      "PYR": "Negative",
+      "Optochin": "Negative"
+    }
+  },
+  {
+    "name": "Streptococcus pneumoniae",
+    "input": "Gram-positive lancet-shaped diplococci, alpha-hemolytic. Catalase negative. Optochin sensitive. Bile soluble. CAMP negative. PYR negative.",
+    "expected": {
+      "Gram Stain": "Positive",
+      "Shape": "Cocci",
+      "Catalase": "Negative",
+      "Haemolysis Type": "Alpha",
+      "Haemolysis": "Positive",
+      "Optochin": "Positive",
+      "Bile Solubility": "Positive",
+      "CAMP": "Negative",
+      "PYR": "Negative"
+    }
+  },
+  {
+    "name": "Enterococcus faecalis",
+    "input": "Gram-positive cocci in chains. Catalase negative. Gamma-hemolytic. PYR positive. Optochin resistant. Novobiocin resistant. Bile esculin positive.",
+    "expected": {
+      "Gram Stain": "Positive",
+      "Shape": "Cocci",
+      "Catalase": "Negative",
+      "Haemolysis Type": "None",
+      "Haemolysis": "Negative",
+      "PYR": "Positive",
+      "Optochin": "Negative",
+      "Novobiocin": "Negative",
+      "Esculin Hydrolysis": "Positive"
+    }
+  },
+  {
+    "name": "Listeria monocytogenes",
+    "input": "Gram-positive short rods. Beta-hemolytic. Catalase positive. CAMP positive with Staph aureus. Motile at room temperature. Bile esculin positive.",
+    "expected": {
+      "Gram Stain": "Positive",
+      "Shape": "Short Rods",
+      "Catalase": "Positive",
+      "Haemolysis Type": "Beta",
+      "Haemolysis": "Positive",
+      "CAMP": "Positive",
+      "Motility": "Positive",
+      "Esculin Hydrolysis": "Positive"
+    }
+  [
 
 
 
