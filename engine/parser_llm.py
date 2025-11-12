@@ -1,20 +1,25 @@
 # engine/parser_llm.py
 # ------------------------------------------------------------
-# LLM-based parser using Groq's "llama3-70b-8192" model.
-# Extracts structured microbiology test results into JSON.
+# LLM-based parser using Cloudflare Workers AI (@cf/meta/llama-3.1-8b-instruct)
+# Extracts microbiology test results into structured JSON.
 
 import os
 import json
 import requests
 
-# Load API key for Groq
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+# Load secrets
+CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID")
+CLOUDFLARE_API_TOKEN = os.getenv("CLOUDFLARE_API_TOKEN", "")
 
-# Groq API endpoint
-GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+# Cloudflare endpoint
+MODEL_PATH = "@cf/meta/llama-3.1-8b-instruct"
+CLOUDFLARE_URL = (
+    f"https://api.cloudflare.com/client/v4/accounts/"
+    f"{CLOUDFLARE_ACCOUNT_ID}/ai/run/{MODEL_PATH}"
+)
 
 # ------------------------------------------------------------
-# Load all schema fields (core + extended)
+# Load schema fields
 # ------------------------------------------------------------
 from engine.parser_ext import CORE_FIELDS
 
@@ -28,86 +33,58 @@ except:
 ALL_FIELDS = sorted(set(list(CORE_FIELDS) + list(EXT_SCHEMA.keys())))
 
 # ------------------------------------------------------------
-# Prompt template for JSON extraction
+# Prompt template (optimized for JSON extraction)
 # ------------------------------------------------------------
 PROMPT_TEMPLATE = """
 You are an expert clinical microbiology assistant.
 
-Your task is to EXTRACT all microbiology test results from the text
-and convert them into a JSON dictionary.
+Extract ALL microbiology test results from the text and convert them into JSON.
 
 RULES:
 - Use ONLY the fields from this exact list:
   {FIELD_LIST}
-- For each field, the value MUST be one of:
+- Allowed values:
   "Positive", "Negative", "Variable", "Unknown",
-  OR a literal string (e.g. "37//40") for temperatures.
+  OR literal strings for temperatures (e.g. "37//40").
 - If a test is NOT mentioned, set it to "Unknown".
-- DO NOT hallucinate extra fields.
-- DO NOT change field names.
-- ALWAYS return VALID JSON ONLY.
+- DO NOT hallucinate new fields.
+- ALWAYS return valid JSON only.
 
-Example input:
-"Gram-positive cocci in clusters, catalase positive, coagulase positive."
-
-Example output:
-{{
-  "Gram Stain": "Positive",
-  "Shape": "Cocci",
-  "Catalase": "Positive",
-  "Coagulase": "Positive",
-  "Oxidase": "Unknown",
-  ...
-}}
-
-Now extract results for this text:
+Now extract from this text:
 
 ---
 {TEXT}
 ---
 
-Return ONLY JSON as the final output.
+Return ONLY JSON.
 """
 
 # ------------------------------------------------------------
-# Main Groq LLM Parser
+# Cloudflare LLM Parser
 # ------------------------------------------------------------
 def parse_text_llm(text: str) -> dict:
 
-    if not GROQ_API_KEY:
+    if not CLOUDFLARE_ACCOUNT_ID:
         return {
             "parsed_fields": {},
-            "error": "GROQ_API_KEY environment variable is not set",
+            "error": "Missing CLOUDFLARE_ACCOUNT_ID in secrets",
             "raw": ""
         }
 
-    headers = {
-        "Authorization": f"Bearer {GROQ_API_KEY}",
-        "Content-Type": "application/json"
-    }
+    headers = {"Content-Type": "application/json"}
+    if CLOUDFLARE_API_TOKEN:
+        headers["Authorization"] = f"Bearer {CLOUDFLARE_API_TOKEN}"
 
     payload = {
-        "model": "llama3-70b-8192",
-        "messages": [
-            {
-                "role": "system",
-                "content": "You convert microbiology descriptions into structured JSON test results."
-            },
-            {
-                "role": "user",
-                "content": PROMPT_TEMPLATE.format(
-                    FIELD_LIST=", ".join(ALL_FIELDS),
-                    TEXT=text
-                )
-            }
-        ],
-        "temperature": 0.0,
-        "response_format": {"type": "json_object"}   # Force JSON output
+        "prompt": PROMPT_TEMPLATE.format(
+            FIELD_LIST=", ".join(ALL_FIELDS),
+            TEXT=text
+        ),
+        "temperature": 0.0  # deterministic extraction
     }
 
-    # Send request to Groq API
     try:
-        r = requests.post(GROQ_URL, headers=headers, json=payload, timeout=30)
+        r = requests.post(CLOUDFLARE_URL, json=payload, headers=headers, timeout=30)
         data = r.json()
     except Exception as e:
         return {
@@ -116,29 +93,16 @@ def parse_text_llm(text: str) -> dict:
             "raw": ""
         }
 
-    # Groq returns:
-    # {
-    #   "choices": [
-    #       {
-    #           "message": { "content": "...json..." }
-    #       }
-    #   ]
-    # }
-    if "choices" not in data:
+    # Cloudflare returns:
+    # { "result": { "response": "... JSON ..." } }
+    if "result" not in data or "response" not in data["result"]:
         return {
             "parsed_fields": {},
-            "error": "Unexpected response format from Groq",
+            "error": f"Unexpected response format: {data}",
             "raw": json.dumps(data)
         }
 
-    try:
-        raw_output = data["choices"][0]["message"]["content"]
-    except Exception:
-        return {
-            "parsed_fields": {},
-            "error": "Groq response missing message content",
-            "raw": json.dumps(data)
-        }
+    raw_output = data["result"]["response"]
 
     # Validate JSON
     try:
@@ -169,6 +133,6 @@ def parse_text_llm(text: str) -> dict:
 
     return {
         "parsed_fields": cleaned,
-        "source": "llm_parser",
+        "source": "llm_parser_cf",
         "raw": raw_output
     }
