@@ -113,11 +113,6 @@
     "status": "experimental",
     "aliases": []
   },
-  "Fermentation Product": {
-    "value_type": "enum_PNV",
-    "status": "experimental",
-    "aliases": []
-  },
   "Casein Hydrolysis": {
     "value_type": "enum_PNV",
     "status": "experimental",
