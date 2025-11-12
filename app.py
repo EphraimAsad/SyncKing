@@ -235,9 +235,7 @@ with tab_manual:
             with open(pdf_path, "rb") as f:
                 st.download_button("⬇️ Download PDF", f, file_name="BactAI-d_Report.pdf")
 
-# =========================
-# TAB 2: LLM PARSER (RULE/LLM STUBS)
-# =========================
+
 # =========================
 # TAB 2: LLM PARSER (RULE/LLM + EXTENDED)
 # =========================
@@ -348,4 +346,5 @@ st.markdown(
     "<div style='text-align:center; font-size:14px;'>Created by <b>Zain</b> | www.linkedin.com/in/zain-asad-1998EPH</div>",
     unsafe_allow_html=True
 )
+
 
