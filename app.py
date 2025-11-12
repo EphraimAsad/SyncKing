@@ -386,7 +386,7 @@ with tab_llm:
     )
     user_text = st.text_area("Paste microbiology description here:")
 
-    col_a, col_b, col_c = st.columns(3)
+    col_a, col_b, col_c, col_d = st.columns(4)
 
     with col_a:
         if st.button("Parse (Rule Parser)"):
@@ -503,6 +503,7 @@ st.markdown(
     "<div style='text-align:center; font-size:14px;'>Created by <b>Zain</b> | www.linkedin.com/in/zain-asad-1998EPH</div>",
     unsafe_allow_html=True,
 )
+
 
 
 
