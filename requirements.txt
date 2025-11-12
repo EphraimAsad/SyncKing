@@ -6,3 +6,5 @@ fpdf
 ollama
 requests
 PyGithub
+deepseek
+
