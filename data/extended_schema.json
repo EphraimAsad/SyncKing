@@ -177,5 +177,10 @@
     "value_type": "enum_PNV",
     "status": "experimental",
     "aliases": []
+  },
+  "Bacitracin": {
+    "value_type": "enum_PNV",
+    "status": "experimental",
+    "aliases": []
   }
 }
