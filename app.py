@@ -419,11 +419,11 @@ with tab_llm:
                     "No signal available (try training first or providing a description with extended tests)."
                 )
     with col_d:
-    if st.button("Parse with LLM (DeepSeek)"):
-        from engine.parser_llm import parse_text_llm
-        result = parse_text_llm(user_text or "")
-        st.subheader("LLM Parser Output")
-        st.json(result)
+        if st.button("Parse with LLM (DeepSeek)"):
+            from engine.parser_llm import parse_text_llm
+            result = parse_text_llm(user_text or "")
+            st.subheader("LLM Parser Output")
+            st.json(result)
 
 # =========================
 # TAB 3: GOLD TESTS (identical to your Stage 5 version)
@@ -503,5 +503,6 @@ st.markdown(
     "<div style='text-align:center; font-size:14px;'>Created by <b>Zain</b> | www.linkedin.com/in/zain-asad-1998EPH</div>",
     unsafe_allow_html=True,
 )
+
 
 
