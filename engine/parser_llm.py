@@ -1,27 +1,24 @@
 # engine/parser_llm.py
-# ---------------------------------------------------------------------------
-# LLM-based parser using DeepSeek Cloud API ("deepseek-chat")
+# ------------------------------------------------------------
+# LLM-based parser using Ollama Cloud model "deepseek-v3.1:671b-cloud"
 # Extracts structured microbiology test results into JSON.
-#
-# This module merges smoothly with the rule parser + extended parser
-# and will later be fused into the Stage 9 tri-parser architecture.
-# ---------------------------------------------------------------------------
 
 import os
 import json
 import requests
 
-# Load API key from environment
-DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+# Load API key for Ollama Cloud
+OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY")
 
-DEEPSEEK_URL = "https://api.deepseek.com/chat/completions"
+# Your Ollama Cloud endpoint:
+OLLAMA_URL = "https://api.ollama.com/v1/chat/completions"
 
-# ---------------------------------------------------------------------------
+# ------------------------------------------------------------
 # Load all schema fields (core + extended)
-# ---------------------------------------------------------------------------
+# ------------------------------------------------------------
 from engine.parser_ext import CORE_FIELDS
-EXT_SCHEMA_PATH = "data/extended_schema.json"
 
+EXT_SCHEMA_PATH = "data/extended_schema.json"
 try:
     with open(EXT_SCHEMA_PATH, "r", encoding="utf-8") as f:
         EXT_SCHEMA = json.load(f)
@@ -30,138 +27,94 @@ except:
 
 ALL_FIELDS = sorted(set(list(CORE_FIELDS) + list(EXT_SCHEMA.keys())))
 
-# ---------------------------------------------------------------------------
-# Prompt template for DeepSeek
-# ---------------------------------------------------------------------------
+# ------------------------------------------------------------
+# Prompt template
+# ------------------------------------------------------------
 PROMPT_TEMPLATE = """
 You are an expert clinical microbiology assistant.
 
-Your task:
-Extract microbiology test results from the text and convert them into a JSON dictionary.
+Extract microbiology test results from the text and convert them into JSON.
 
 Rules:
-- Only use keys from this exact field list:
+- Only use keys from this exact list:
   {FIELD_LIST}
-
-- For each field, values must be one of:
-  "Positive", "Negative", "Variable", "Unknown", or a numeric/string literal (example: "37//40").
-
-- If a test is not mentioned in the text, return "Unknown".
-
-- DO NOT invent or hallucinate tests or values.
-- DO NOT add any fields not in the official list.
+- Values must be:
+  "Positive", "Negative", "Variable", "Unknown", or a literal string (e.g. "37//40")
+- If a test is not mentioned, return "Unknown"
+- DO NOT add extra fields.
 - ALWAYS return valid JSON only.
 
-Example input:
-"Gram-positive cocci in clusters, catalase positive, coagulase positive."
+Now extract the following text:
 
-Example output:
-{{
-  "Gram Stain": "Positive",
-  "Shape": "Cocci",
-  "Catalase": "Positive",
-  "Coagulase": "Positive",
-  "Oxidase": "Unknown",
-  "DNase": "Unknown",
-  "Growth Temperature": "Unknown",
-  ...
-}}
-
-Now extract results for this text:
 ---
 {TEXT}
 ---
-Return only JSON.
+
+Return ONLY JSON.
 """
 
-
-# ---------------------------------------------------------------------------
-# LLM Parsing Function
-# ---------------------------------------------------------------------------
+# ------------------------------------------------------------
+# Main LLM Parser for Ollama Cloud
+# ------------------------------------------------------------
 def parse_text_llm(text: str) -> dict:
-    """
-    Sends the text to DeepSeek and returns parsed JSON test fields.
-    Handles errors gracefully and normalizes outputs.
-    """
-    if not DEEPSEEK_API_KEY:
+
+    if not OLLAMA_API_KEY:
         return {
             "parsed_fields": {},
-            "error": "DEEPSEEK_API_KEY environment variable not set.",
+            "error": "OLLAMA_API_KEY not set",
             "raw": ""
         }
 
-    # Build payload for DeepSeek Cloud API
-    payload = {
-        "model": "deepseek-chat",
-        "messages": [
-            {
-                "role": "system",
-                "content": "You convert microbiology descriptions into structured test result JSON."
-            },
-            {
-                "role": "user",
-                "content": PROMPT_TEMPLATE.format(
-                    FIELD_LIST=", ".join(ALL_FIELDS),
-                    TEXT=text
-                )
-            }
-        ],
-        "temperature": 0.0,
-        "response_format": {"type": "json_object"}  # Forces proper JSON output
-    }
-
     headers = {
-        "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
+        "Authorization": f"Bearer {OLLAMA_API_KEY}",
         "Content-Type": "application/json"
     }
 
-    # Call API safely
+    payload = {
+        "model": "deepseek-v3.1:671b-cloud",
+        "messages": [
+            {"role": "user",
+             "content": PROMPT_TEMPLATE.format(
+                 FIELD_LIST=", ".join(ALL_FIELDS),
+                 TEXT=text
+             )}
+        ]
+    }
+
     try:
-        resp = requests.post(DEEPSEEK_URL, json=payload, headers=headers, timeout=25)
-        data = resp.json()
+        r = requests.post(OLLAMA_URL, headers=headers, json=payload, timeout=25)
+        data = r.json()
     except Exception as e:
+        return {"parsed_fields": {}, "error": str(e), "raw": ""}
+
+    # Ollama returns:
+    # {
+    #    "message": { "role": "assistant", "content": "...json..." },
+    #    "done": true
+    # }
+    if "message" not in data or "content" not in data["message"]:
         return {
             "parsed_fields": {},
-            "error": f"HTTP error: {e}",
-            "raw": ""
+            "error": "Unexpected response format from Ollama",
+            "raw": json.dumps(data)
         }
 
-    # Check for DeepSeek errors
-    if "error" in data:
-        return {
-            "parsed_fields": {},
-            "error": f"DeepSeek API error: {data['error']}",
-            "raw": str(data)
-        }
+    raw_output = data["message"]["content"]
 
-    # Extract LLM JSON content
-    try:
-        raw_output = data["choices"][0]["message"]["content"]
-    except Exception as e:
-        return {
-            "parsed_fields": {},
-            "error": f"Malformed DeepSeek response: {e}",
-            "raw": json.dumps(data, indent=2)
-        }
-
-    # Parse JSON safely
+    # Validate JSON
     try:
         parsed = json.loads(raw_output)
     except Exception:
         return {
             "parsed_fields": {},
-            "error": "LLM returned invalid JSON.",
+            "error": "Invalid JSON returned by LLM",
             "raw": raw_output
         }
 
-    # -----------------------------------------------------------------------
-    # Normalize values
-    # -----------------------------------------------------------------------
+    # Normalize values (Positive, Negative, Variable)
     cleaned = {}
     for field in ALL_FIELDS:
         val = parsed.get(field, "Unknown")
-
-        # Normalize strings
         if isinstance(val, str):
             low = val.lower().strip()
             if low in ["positive", "+"]:
@@ -170,10 +123,8 @@ def parse_text_llm(text: str) -> dict:
                 cleaned[field] = "Negative"
             elif low in ["variable", "var"]:
                 cleaned[field] = "Variable"
-            elif low == "" or low == "unknown":
-                cleaned[field] = "Unknown"
             else:
-                cleaned[field] = val  # leave other literal strings alone
+                cleaned[field] = val
         else:
             cleaned[field] = val
 
