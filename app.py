@@ -197,11 +197,30 @@ with tab_manual:
         except Exception:
             ext_schema = {}
 
+    # CORE FIELDS (same list as in parser_ext)
+    CORE_FIELDS = {
+        "Genus","Species","Gram Stain","Shape","Colony Morphology","Haemolysis","Haemolysis Type",
+        "Motility","Capsule","Spore Formation","Growth Temperature","Oxygen Requirement",
+        "Media Grown On","Catalase","Oxidase","Coagulase","DNase","Urease","Citrate","Methyl Red",
+        "VP","H2S","ONPG","Nitrate Reduction","Lipase Test","NaCl Tolerant (>=6%)",
+        "Lysine Decarboxylase","Ornitihine Decarboxylase","Arginine dihydrolase",
+        "Gelatin Hydrolysis","Esculin Hydrolysis","Glucose Fermentation","Lactose Fermentation",
+        "Sucrose Fermentation","Mannitol Fermentation","Sorbitol Fermentation",
+        "Maltose Fermentation","Xylose Fermentation","Rhamnose Fermentation",
+        "Arabinose Fermentation","Raffinose Fermentation","Trehalose Fermentation",
+        "Inositol Fermentation"
+    }
+
     extended_enum_fields = [
         f_name
         for f_name, meta in ext_schema.items()
-        if isinstance(meta, dict) and meta.get("value_type") == "enum_PNV"
+        if (
+            isinstance(meta, dict)
+            and meta.get("value_type") == "enum_PNV"
+            and f_name not in CORE_FIELDS     # <-- prevent core duplicates
+        )
     ]
+
 
     if extended_enum_fields:
         with st.sidebar.expander("🧪 Extended Tests (Experimental)", expanded=False):
@@ -478,3 +497,4 @@ st.markdown(
     "<div style='text-align:center; font-size:14px;'>Created by <b>Zain</b> | www.linkedin.com/in/zain-asad-1998EPH</div>",
     unsafe_allow_html=True,
 )
+
