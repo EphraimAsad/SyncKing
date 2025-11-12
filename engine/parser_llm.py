@@ -1,17 +1,17 @@
 # engine/parser_llm.py
 # ------------------------------------------------------------
-# LLM-based parser using Ollama Cloud model "deepseek-v3.1:671b-cloud"
+# LLM-based parser using Groq's "llama3-70b-8192" model.
 # Extracts structured microbiology test results into JSON.
 
 import os
 import json
 import requests
 
-# Load API key for Ollama Cloud
-OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY")
+# Load API key for Groq
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-# Your Ollama Cloud endpoint:
-OLLAMA_URL = "https://api.ollama.com/v1/chat/completions"
+# Groq API endpoint
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 # ------------------------------------------------------------
 # Load all schema fields (core + extended)
@@ -28,78 +28,117 @@ except:
 ALL_FIELDS = sorted(set(list(CORE_FIELDS) + list(EXT_SCHEMA.keys())))
 
 # ------------------------------------------------------------
-# Prompt template
+# Prompt template for JSON extraction
 # ------------------------------------------------------------
 PROMPT_TEMPLATE = """
 You are an expert clinical microbiology assistant.
 
-Extract microbiology test results from the text and convert them into JSON.
+Your task is to EXTRACT all microbiology test results from the text
+and convert them into a JSON dictionary.
 
-Rules:
-- Only use keys from this exact list:
+RULES:
+- Use ONLY the fields from this exact list:
   {FIELD_LIST}
-- Values must be:
-  "Positive", "Negative", "Variable", "Unknown", or a literal string (e.g. "37//40")
-- If a test is not mentioned, return "Unknown"
-- DO NOT add extra fields.
-- ALWAYS return valid JSON only.
+- For each field, the value MUST be one of:
+  "Positive", "Negative", "Variable", "Unknown",
+  OR a literal string (e.g. "37//40") for temperatures.
+- If a test is NOT mentioned, set it to "Unknown".
+- DO NOT hallucinate extra fields.
+- DO NOT change field names.
+- ALWAYS return VALID JSON ONLY.
 
-Now extract the following text:
+Example input:
+"Gram-positive cocci in clusters, catalase positive, coagulase positive."
+
+Example output:
+{{
+  "Gram Stain": "Positive",
+  "Shape": "Cocci",
+  "Catalase": "Positive",
+  "Coagulase": "Positive",
+  "Oxidase": "Unknown",
+  ...
+}}
+
+Now extract results for this text:
 
 ---
 {TEXT}
 ---
 
-Return ONLY JSON.
+Return ONLY JSON as the final output.
 """
 
 # ------------------------------------------------------------
-# Main LLM Parser for Ollama Cloud
+# Main Groq LLM Parser
 # ------------------------------------------------------------
 def parse_text_llm(text: str) -> dict:
 
-    if not OLLAMA_API_KEY:
+    if not GROQ_API_KEY:
         return {
             "parsed_fields": {},
-            "error": "OLLAMA_API_KEY not set",
+            "error": "GROQ_API_KEY environment variable is not set",
             "raw": ""
         }
 
     headers = {
-        "Authorization": f"Bearer {OLLAMA_API_KEY}",
+        "Authorization": f"Bearer {GROQ_API_KEY}",
         "Content-Type": "application/json"
     }
 
     payload = {
-        "model": "deepseek-v3.1:671b-cloud",
+        "model": "llama3-70b-8192",
         "messages": [
-            {"role": "user",
-             "content": PROMPT_TEMPLATE.format(
-                 FIELD_LIST=", ".join(ALL_FIELDS),
-                 TEXT=text
-             )}
-        ]
+            {
+                "role": "system",
+                "content": "You convert microbiology descriptions into structured JSON test results."
+            },
+            {
+                "role": "user",
+                "content": PROMPT_TEMPLATE.format(
+                    FIELD_LIST=", ".join(ALL_FIELDS),
+                    TEXT=text
+                )
+            }
+        ],
+        "temperature": 0.0,
+        "response_format": {"type": "json_object"}   # Force JSON output
     }
 
+    # Send request to Groq API
     try:
-        r = requests.post(OLLAMA_URL, headers=headers, json=payload, timeout=25)
+        r = requests.post(GROQ_URL, headers=headers, json=payload, timeout=30)
         data = r.json()
     except Exception as e:
-        return {"parsed_fields": {}, "error": str(e), "raw": ""}
-
-    # Ollama returns:
-    # {
-    #    "message": { "role": "assistant", "content": "...json..." },
-    #    "done": true
-    # }
-    if "message" not in data or "content" not in data["message"]:
         return {
             "parsed_fields": {},
-            "error": "Unexpected response format from Ollama",
+            "error": f"Connection error: {e}",
+            "raw": ""
+        }
+
+    # Groq returns:
+    # {
+    #   "choices": [
+    #       {
+    #           "message": { "content": "...json..." }
+    #       }
+    #   ]
+    # }
+    if "choices" not in data:
+        return {
+            "parsed_fields": {},
+            "error": "Unexpected response format from Groq",
             "raw": json.dumps(data)
         }
 
-    raw_output = data["message"]["content"]
+    try:
+        raw_output = data["choices"][0]["message"]["content"]
+    except Exception:
+        return {
+            "parsed_fields": {},
+            "error": "Groq response missing message content",
+            "raw": json.dumps(data)
+        }
 
     # Validate JSON
     try:
@@ -107,21 +146,21 @@ def parse_text_llm(text: str) -> dict:
     except Exception:
         return {
             "parsed_fields": {},
-            "error": "Invalid JSON returned by LLM",
+            "error": "LLM returned invalid JSON",
             "raw": raw_output
         }
 
-    # Normalize values (Positive, Negative, Variable)
+    # Normalize values
     cleaned = {}
     for field in ALL_FIELDS:
         val = parsed.get(field, "Unknown")
         if isinstance(val, str):
-            low = val.lower().strip()
-            if low in ["positive", "+"]:
+            v = val.lower().strip()
+            if v in ["positive", "+"]:
                 cleaned[field] = "Positive"
-            elif low in ["negative", "-"]:
+            elif v in ["negative", "-"]:
                 cleaned[field] = "Negative"
-            elif low in ["variable", "var"]:
+            elif v in ["variable", "var"]:
                 cleaned[field] = "Variable"
             else:
                 cleaned[field] = val
