@@ -1,27 +1,21 @@
 # engine/parser_llm.py
 # ------------------------------------------------------------
-# LLM-based parser using Cloudflare Workers AI (@cf/meta/llama-3.1-8b-instruct)
-# Extracts microbiology test results into structured JSON, with robust
-# handling of "almost JSON" outputs.
+# LLM-based parser using local Phi-2 model via HuggingFace.
+# This replaces all external API calls (Cloudflare, DeepSeek).
+#
+# The model runs completely locally on CPU in Streamlit Cloud,
+# giving unlimited free parsing for gold tests and tri-fusion.
+#
+# ------------------------------------------------------------
 
-import os
 import json
 import re
-import requests
-
-# Load secrets
-CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID")
-CLOUDFLARE_API_TOKEN = os.getenv("CLOUDFLARE_API_TOKEN", "")
-
-# Cloudflare endpoint
-MODEL_PATH = "@cf/meta/llama-3.1-8b-instruct"
-CLOUDFLARE_URL = (
-    f"https://api.cloudflare.com/client/v4/accounts/"
-    f"{CLOUDFLARE_ACCOUNT_ID}/ai/run/{MODEL_PATH}"
-)
+import torch
+import streamlit as st
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 # ------------------------------------------------------------
-# Load schema fields
+# Load CORE + EXTENDED FIELDS
 # ------------------------------------------------------------
 from engine.parser_ext import CORE_FIELDS
 
@@ -34,135 +28,143 @@ except:
 
 ALL_FIELDS = sorted(set(list(CORE_FIELDS) + list(EXT_SCHEMA.keys())))
 
+
 # ------------------------------------------------------------
-# Prompt template (optimized for JSON extraction)
+# MODEL LOADER (cached so it loads only once)
+# ------------------------------------------------------------
+@st.cache_resource(show_spinner=True)
+def load_phi2_model():
+    """Load Phi-2 locally (CPU mode). Cached for entire session."""
+    name = "microsoft/phi-2"
+
+    tokenizer = AutoTokenizer.from_pretrained(name, trust_remote_code=True)
+    model = AutoModelForCausalLM.from_pretrained(
+        name,
+        torch_dtype=torch.float32,
+        trust_remote_code=True
+    )
+
+    model.eval()
+    return tokenizer, model
+
+
+# ------------------------------------------------------------
+# Prompt for JSON extraction
 # ------------------------------------------------------------
 PROMPT_TEMPLATE = """
 You are an expert clinical microbiology assistant.
 
-Extract ALL microbiology test results from the text and convert them into JSON.
+Extract ALL microbiology test results from the text and return a STRICT JSON object.
 
 RULES:
-- Use ONLY the fields from this exact list:
-  {FIELD_LIST}
+- Use ONLY these fields:
+{FIELD_LIST}
 - Allowed values:
   "Positive", "Negative", "Variable", "Unknown",
   OR literal strings for temperatures (e.g. "37//40").
-- If a test is NOT mentioned, set it to "Unknown".
-- DO NOT hallucinate new fields.
-- DO NOT wrap the JSON in code fences or add explanations.
-- ALWAYS return a single valid JSON object, and nothing else.
+- If a test is not mentioned: set "Unknown".
+- DO NOT create new fields or hallucinate.
+- DO NOT output explanations.
+- DO NOT wrap JSON in markdown code fences.
+- Output ONLY a raw JSON object.
 
-Now extract from this text:
-
+Text:
 ---
 {TEXT}
 ---
 
-Return ONLY JSON.
+JSON:
 """
 
+
 # ------------------------------------------------------------
-# Helper: try to salvage almost-JSON into strict JSON
+# Helper: salvage malformed JSON
 # ------------------------------------------------------------
-def _salvage_json(raw: str):
-    """
-    Try to rescue 'almost JSON': trim to outer braces and
-    remove trailing commas. Returns dict or raises.
-    """
+def salvage_json(raw: str):
+    """Attempt to clean and parse 'almost JSON' returned by model."""
     s = raw.strip()
-    # Keep only between first '{' and last '}'
+
+    # keep only {...}
     start = s.find("{")
     end = s.rfind("}")
     if start == -1 or end == -1 or end <= start:
-        raise ValueError("No JSON object braces found")
+        raise ValueError("No valid JSON object braces found.")
 
     s = s[start : end + 1]
 
-    # Remove trailing commas before } or ]
+    # remove trailing commas
     s = re.sub(r",\s*([}\]])", r"\1", s)
 
     return json.loads(s)
 
 
 # ------------------------------------------------------------
-# Cloudflare LLM Parser
+# NORMALISE VALUES
 # ------------------------------------------------------------
-def parse_text_llm(text: str) -> dict:
+def normalise_value(val):
+    if val is None:
+        return "Unknown"
+    v = str(val).strip()
 
-    if not CLOUDFLARE_ACCOUNT_ID:
-        return {
-            "parsed_fields": {},
-            "error": "Missing CLOUDFLARE_ACCOUNT_ID in secrets",
-            "raw": ""
-        }
+    low = v.lower()
+    if low in ["positive", "+", "pos"]:
+        return "Positive"
+    if low in ["negative", "-", "neg"]:
+        return "Negative"
+    if low in ["variable", "var"]:
+        return "Variable"
 
-    headers = {"Content-Type": "application/json"}
-    if CLOUDFLARE_API_TOKEN:
-        headers["Authorization"] = f"Bearer {CLOUDFLARE_API_TOKEN}"
+    return v
 
-    payload = {
-        "prompt": PROMPT_TEMPLATE.format(
-            FIELD_LIST=", ".join(ALL_FIELDS),
-            TEXT=text
-        ),
-        "temperature": 0.0,   # deterministic extraction
-        "max_tokens": 800     # enough to include all fields without truncation
-    }
 
+# ------------------------------------------------------------
+# MAIN PARSER FUNCTION
+# ------------------------------------------------------------
+def parse_text_llm(text: str):
+    tokenizer, model = load_phi2_model()
+
+    prompt = PROMPT_TEMPLATE.format(
+        FIELD_LIST=", ".join(ALL_FIELDS),
+        TEXT=text
+    )
+
+    inputs = tokenizer(prompt, return_tensors="pt")
+    input_ids = inputs["input_ids"]
+
+    # Generate deterministic output (no randomness)
+    with torch.no_grad():
+        output_ids = model.generate(
+            input_ids=input_ids,
+            max_new_tokens=500,
+            temperature=0.0,
+            do_sample=False
+        )
+
+    full_text = tokenizer.decode(output_ids[0], skip_special_tokens=True)
+
+    # Cut off the prompt prefix
+    raw = full_text[len(prompt):].strip()
+
+    # Try to parse JSON
     try:
-        r = requests.post(CLOUDFLARE_URL, json=payload, headers=headers, timeout=30)
-        data = r.json()
-    except Exception as e:
-        return {
-            "parsed_fields": {},
-            "error": f"Connection error: {e}",
-            "raw": ""
-        }
-
-    # Cloudflare returns: { "result": { "response": "... JSON or text ..." } }
-    if "result" not in data or "response" not in data["result"]:
-        return {
-            "parsed_fields": {},
-            "error": f"Unexpected response format: {data}",
-            "raw": json.dumps(data)
-        }
-
-    raw_output = data["result"]["response"]
-
-    # 1st attempt: strict JSON
-    try:
-        parsed = json.loads(raw_output)
+        parsed = json.loads(raw)
     except Exception:
-        # 2nd attempt: salvage almost-JSON
         try:
-            parsed = _salvage_json(raw_output)
+            parsed = salvage_json(raw)
         except Exception:
             return {
                 "parsed_fields": {},
-                "error": "LLM returned invalid or truncated JSON",
-                "raw": raw_output
+                "error": "Invalid JSON returned by model",
+                "raw": raw,
             }
 
-    # Normalize values
+    # Create clean fieldset
     cleaned = {}
-    for field in ALL_FIELDS:
-        val = parsed.get(field, "Unknown")
-        if isinstance(val, str):
-            v = val.lower().strip()
-            if v in ["positive", "+"]:
-                cleaned[field] = "Positive"
-            elif v in ["negative", "-"]:
-                cleaned[field] = "Negative"
-            elif v in ["variable", "var"]:
-                cleaned[field] = "Variable"
-            else:
-                cleaned[field] = val
-        else:
-            cleaned[field] = val
+    for f in ALL_FIELDS:
+        cleaned[f] = normalise_value(parsed.get(f, "Unknown"))
 
     return {
         "parsed_fields": cleaned,
-        "source": "llm_parser_cf",
-        "raw": raw_output
+        "source": "llm_phi2",
+        "raw": raw
     }
