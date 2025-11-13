@@ -6,4 +6,9 @@ fpdf
 ollama
 requests
 PyGithub
+transformers
+accelerate
+safetensors
+torch
+
 
