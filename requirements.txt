@@ -6,9 +6,10 @@ fpdf
 ollama
 requests
 PyGithub
-transformers
+torch==2.2.0       # CPU-only
+transformers==4.37.2
 accelerate
 safetensors
-torch
+
 
 
