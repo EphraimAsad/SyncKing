@@ -381,7 +381,7 @@ with tab_manual:
 with tab_llm:
     st.info(
         "Paste a microbiology description. We'll parse with rules + extended tests, "
-        "infer genera from extended evidence, and you can also try the DeepSeek LLM parser."
+        "infer genera from extended evidence, and you can also try the CloudFlare LLM parser."
     )
     user_text = st.text_area("Paste microbiology description here:")
 
@@ -422,12 +422,14 @@ with tab_llm:
                 )
 
     # LLM parser (DeepSeek)
+    # LLM parser (Cloudflare Workers AI)
     with col_d:
-        if st.button("Parse with LLM (DeepSeek)"):
-            from engine.parser_llm import parse_text_llm
-            result = parse_text_llm(user_text or "")
-            st.subheader("LLM Parser Output")
-            st.json(result)
+            if st.button("Parse with LLM (Cloudflare)"):
+                from engine.parser_llm import parse_text_llm
+                result = parse_text_llm(user_text or "")
+                st.subheader("LLM Parser Output (Cloudflare)")
+                st.json(result)
+)
     
     # --------------------------------------------------------
     # Tri-Fusion: Rules + Extended + LLM → Identification
@@ -598,4 +600,5 @@ st.markdown(
     "<div style='text-align:center; font-size:14px;'>Created by <b>Zain</b> | www.linkedin.com/in/zain-asad-1998EPH</div>",
     unsafe_allow_html=True,
 )
+
 
