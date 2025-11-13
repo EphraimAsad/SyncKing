@@ -592,11 +592,11 @@ with tab_gold:
             st.json(result)
 
     if st.button("Evaluate Parsers (Stage 10A)"):
-    from training.parser_eval import run_parser_eval
-    with st.spinner("Running parser evaluation on all gold tests..."):
-        summary = run_parser_eval()
-    st.success("Parser evaluation complete.")
-    st.json(summary)
+        from training.parser_eval import run_parser_eval
+        with st.spinner("Running parser evaluation on all gold tests..."):
+            summary = run_parser_eval()
+        st.success("Parser evaluation complete.")
+        st.json(summary)
 
 # =========================
 # FOOTER
@@ -606,6 +606,7 @@ st.markdown(
     "<div style='text-align:center; font-size:14px;'>Created by <b>Zain</b> | www.linkedin.com/in/zain-asad-1998EPH</div>",
     unsafe_allow_html=True,
 )
+
 
 
 
