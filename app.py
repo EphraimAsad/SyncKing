@@ -428,6 +428,97 @@ with tab_llm:
             result = parse_text_llm(user_text or "")
             st.subheader("LLM Parser Output")
             st.json(result)
+    
+    # --------------------------------------------------------
+    # Tri-Fusion: Rules + Extended + LLM → Identification
+    # --------------------------------------------------------
+    st.markdown("---")
+    st.subheader("Tri-Fusion: Rules + Extended + LLM → Identification")
+
+    st.caption(
+        "This will run all three parsers on the text, fuse their outputs "
+        "with precedence (Extended > Rules > LLM), and then run the main "
+        "BactAI-D identification engine on the fused test profile."
+    )
+
+    if st.button("Parse & Identify (Tri-Fusion)"):
+        from engine.parser_fusion import parse_text_fused
+
+        if not user_text.strip():
+            st.error("Please paste a microbiology description first.")
+        else:
+            with st.spinner("Running tri-fusion parsing and identification..."):
+                fusion = parse_text_fused(user_text or "")
+                fused_fields = fusion.get("fused_fields", {})
+
+                st.subheader("Fused Parsed Fields")
+                st.json(fused_fields)
+
+                # Run the main identification engine on fused fields
+                results = eng.identify(fused_fields)
+
+                if not results:
+                    st.error("No matches found from fused profile.")
+                else:
+                    results_df = pd.DataFrame(
+                        [
+                            [
+                                r.genus,
+                                f"{r.confidence_percent()}%",
+                                f"{r.true_confidence()}%",
+                                f"{r.blended_confidence_percent()}%",
+                                r.reasoning_paragraph(results),
+                                r.extended_explanation or "",
+                                r.reasoning_factors.get("next_tests", ""),
+                                r.extra_notes,
+                            ]
+                            for r in results
+                        ],
+                        columns=[
+                            "Genus",
+                            "Confidence",
+                            "True Confidence (All Tests)",
+                            "Blended Confidence",
+                            "Reasoning",
+                            "Extended Evidence",
+                            "Next Tests",
+                            "Extra Notes",
+                        ],
+                    )
+
+                    st.subheader("Tri-Fusion Identification Results")
+                    st.info(
+                        "Blended confidence includes extended-test signals when available. "
+                        "Core and true confidences are shown for comparison."
+                    )
+
+                    for _, row in results_df.iterrows():
+                        blended_value = int(row["Blended Confidence"].replace("%", ""))
+                        confidence_color = (
+                            "🟢" if blended_value >= 75 else "🟡" if blended_value >= 50 else "🔴"
+                        )
+                        header = (
+                            f"**{row['Genus']}** — {confidence_color} "
+                            f"Blended: {row['Blended Confidence']} (Core: {row['Confidence']})"
+                        )
+                        with st.expander(header):
+                            st.markdown(f"**Reasoning (Core Tests):** {row['Reasoning']}")
+                            if row["Extended Evidence"]:
+                                st.markdown(
+                                    f"**Extended Evidence (Experimental):**\n\n"
+                                    f"{row['Extended Evidence']}"
+                                )
+                            st.markdown(
+                                f"**Top 3 Next Tests to Differentiate:** {row['Next Tests']}"
+                            )
+                            st.markdown(
+                                f"**True Confidence (All Tests):** "
+                                f"{row['True Confidence (All Tests)']}"
+                            )
+                            if row["Extra Notes"]:
+                                st.markdown(f"**Notes:** {row['Extra Notes']}")
+
+
 
 # =========================
 # TAB 3: GOLD TESTS
@@ -507,3 +598,4 @@ st.markdown(
     "<div style='text-align:center; font-size:14px;'>Created by <b>Zain</b> | www.linkedin.com/in/zain-asad-1998EPH</div>",
     unsafe_allow_html=True,
 )
+
