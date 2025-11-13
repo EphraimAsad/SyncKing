@@ -429,7 +429,6 @@ with tab_llm:
                 result = parse_text_llm(user_text or "")
                 st.subheader("LLM Parser Output (Cloudflare)")
                 st.json(result)
-)
     
     # --------------------------------------------------------
     # Tri-Fusion: Rules + Extended + LLM → Identification
@@ -607,6 +606,7 @@ st.markdown(
     "<div style='text-align:center; font-size:14px;'>Created by <b>Zain</b> | www.linkedin.com/in/zain-asad-1998EPH</div>",
     unsafe_allow_html=True,
 )
+
 
 
 
