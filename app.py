@@ -424,10 +424,10 @@ with tab_llm:
     # LLM parser (DeepSeek)
     # LLM parser (Cloudflare Workers AI)
     with col_d:
-            if st.button("Parse with LLM (Cloudflare)"):
+            if st.button("Parse with LLM (PHI-2 Local)"):
                 from engine.parser_llm import parse_text_llm
                 result = parse_text_llm(user_text or "")
-                st.subheader("LLM Parser Output (Cloudflare)")
+                st.subheader("LLM Parser Output (PHI-2 Local)")
                 st.json(result)
     
     # --------------------------------------------------------
@@ -606,6 +606,7 @@ st.markdown(
     "<div style='text-align:center; font-size:14px;'>Created by <b>Zain</b> | www.linkedin.com/in/zain-asad-1998EPH</div>",
     unsafe_allow_html=True,
 )
+
 
 
 
