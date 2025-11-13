@@ -28,7 +28,7 @@ from engine.parser_ext import parse_text_extended, CORE_FIELDS
 from engine.parser_llm import parse_text_llm
 from engine.parser_fusion import parse_text_fused
 
-GOLD_PATH = "data/gold_tests.json"   # you already have this file
+GOLD_PATH = "training/gold_tests.json"   # you already have this file
 REPORT_DIR = "data/reports"
 
 
